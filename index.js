@@ -3,28 +3,20 @@ const server = express();
 
 server.use(express.json());
 
-const PROJECTS = [
+const projects = [
     { id: "1", title: 'Novo projeto', tasks: [] }
 ];
 
 
 function findById(id){
-    let tempIndex = -1;
-
-    PROJECTS.forEach( (item, index) => {
-        if (id === item.id){
-             tempIndex = index;
-        }
-    });
-
-    return tempIndex;
+    return projects.findIndex(p => p.id == id);
 }
 
 function userHasExist(req, res, next){
     const { id } = req.params;
     let index = findById(id);
-    if (index == -1){
 
+    if (index == -1){
         return res.status(404).json({
             error: "User not found, try again."
         });
@@ -37,34 +29,34 @@ function userHasExist(req, res, next){
 server.post("/projects", (req, res) => {
     const { id, title } = req.body;
 
-    PROJECTS.push({
-        id: `${id}`,
-        title : `${title}`,
+    projects.push({
+        id,
+        title,
         tasks : []
     })
 
-    return res.json(PROJECTS);
+    return res.json(projects);
 });
 
 server.get("/projects", (req, res) => {
-    return res.json(PROJECTS);
+    return res.json(projects);
 });
 
 server.put("/projects/:id", userHasExist, (req, res) =>{
     const { title } = req.body;
-    PROJECTS[req.index]['title'] = title;
-    return res.json(PROJECTS[req.index]);
+    projects[req.index]['title'] = title;
+    return res.json(projects[req.index]);
 });
 
 server.delete("/projects/:id", userHasExist, (req, res) =>{
-    PROJECTS.splice(index, 1);
+    projects.splice(req.index, 1);
     return res.send();
 });
 
 server.post("/projects/:id/tasks", userHasExist, (req, res) => {
     const { titleTask } = req.body;
-    PROJECTS[req.index]['tasks'].push(titleTask);
-    return res.json(PROJECTS[index]);
+    projects[req.index]['tasks'].push(titleTask);
+    return res.json(projects[index]);
 });
 
 
