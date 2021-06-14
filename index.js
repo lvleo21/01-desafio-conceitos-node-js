@@ -28,15 +28,10 @@ function userHasExist(req, res, next){
         return res.status(404).json({
             error: "User not found, try again."
         });
-
-       
     }
-
 
     req.index = index;
     return next();
-
-    
 }
 
 server.post("/projects", (req, res) => {
@@ -61,22 +56,14 @@ server.put("/projects/:id", userHasExist, (req, res) =>{
     return res.json(PROJECTS[req.index]);
 });
 
-server.delete("/projects/:id", (req, res) =>{
-    const { id } = req.params;
-    let index = findById(id);
+server.delete("/projects/:id", userHasExist, (req, res) =>{
     PROJECTS.splice(index, 1);
     return res.send();
 });
 
-server.post("/projects/:id/tasks", (req, res) => {
-    const { id } = req.params;
+server.post("/projects/:id/tasks", userHasExist, (req, res) => {
     const { titleTask } = req.body;
-
-    let index = findById(id);
-
-
-    PROJECTS[index]['tasks'].push(titleTask);
-
+    PROJECTS[req.index]['tasks'].push(titleTask);
     return res.json(PROJECTS[index]);
 });
 
